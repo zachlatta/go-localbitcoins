@@ -1,6 +1,8 @@
 package localbitcoins
 
 import (
+  "bytes"
+  "encoding/json"
   "net/http"
   "net/url"
   "reflect"
@@ -18,7 +20,7 @@ const (
 type Client struct {
   client *http.Client
 
-  // Base URL used for API requests. Must have a trailing slash.
+  // Base URL used for API requests. No trailing slash.
   BaseURL *url.URL
 
   // User agent sent when communicating with the LocalBitcoins API.
@@ -62,4 +64,46 @@ func NewClient(httpClient *http.Client) *Client {
 
   c := &Client{client: httpClient, BaseURL: baseURL, UserAgent: userAgent}
   return c
+}
+
+// Creates an API request. A relative URl can be provided in urlStr, in which
+// case it is resolved relative to the BaseURL of the Client. Relative URLs
+// should always be specified without a preceding slash. If specified, the
+// value pointed to by body is JSON encoded and included as the request body.
+func (c *Client) NewRequest(method, urlStr string,
+                            body interface{}) (*http.Request, error) {
+  rel, err := url.Parse(urlStr)
+  if err != nil {
+    return nil, err
+  }
+
+  // We manually construct this URL because the following doesn't play nice
+  // with base URLs similar to https://example.com/page/
+  //
+  //   u := c.BaseURL.ResolveReference(rel)
+  u := c.BaseURL.String() + rel.String()
+
+  buf := new(bytes.Buffer)
+  if body != nil {
+    err := json.NewEncoder(buf).Encode(body)
+    if err != nil {
+      return nil, err
+    }
+  }
+
+  req, err := http.NewRequest(method, u, buf)
+  if err != nil {
+    return nil, err
+  }
+
+  req.Header.Add("User-Agent", c.UserAgent)
+  return req, nil
+}
+
+// String is a helper routine that allocates a new string value to store v and
+// returns a pointer to it.
+func String(v string) *string {
+  p := new(string)
+  *p = v
+  return p
 }
