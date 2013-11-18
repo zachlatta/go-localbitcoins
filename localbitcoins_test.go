@@ -1,6 +1,7 @@
 package localbitcoins
 
 import (
+  "encoding/json"
   "io/ioutil"
   "net/http"
   "net/http/httptest"
@@ -40,6 +41,15 @@ func teardown() {
 func testMethod(t *testing.T, r *http.Request, want string) {
   if want != r.Method {
     t.Errorf("Request method = %v, want %v", r.Method, want)
+  }
+}
+
+func testURLParseError(t *testing.T, err error) {
+  if err == nil {
+    t.Errorf("Expected error to be returned")
+  }
+  if err, ok := err.(*url.Error); !ok || err.Op != "parse" {
+    t.Errorf("Expected URL parse error, got %+v", err)
   }
 }
 
@@ -85,4 +95,26 @@ func TestNewRequest(t *testing.T) {
   if c.UserAgent != userAgent {
     t.Errorf("NewRequest() User-Agent = %v, want %v", userAgent, c.UserAgent)
   }
+}
+
+func TestNewRequest_invalidJSON(t *testing.T) {
+  c := NewClient(nil)
+
+  type T struct {
+    A map[int]interface{}
+  }
+  _, err := c.NewRequest("GET", "/", &T{})
+
+  if err == nil {
+    t.Error("Expected error to be returned.")
+  }
+  if err, ok := err.(*json.UnsupportedTypeError); !ok {
+    t.Errorf("Expected a JSON error: got %#v.", err)
+  }
+}
+
+func TestNewRequest_badURL(t *testing.T) {
+  c := NewClient(nil)
+  _, err := c.NewRequest("GET", ":", nil)
+  testURLParseError(t, err)
 }

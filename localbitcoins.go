@@ -96,6 +96,12 @@ func (c *Client) NewRequest(method, urlStr string,
   return req, nil
 }
 
+// Response is a LocalBitcoins API response. This wraps the standard
+// http.Response returned from LocalBitcoins and provides convenient access to
+// things like pagination links.
+type Response struct {
+}
+
 // String is a helper routine that allocates a new string value to store v and
 // returns a pointer to it.
 func String(v string) *string {
