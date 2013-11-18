@@ -3,6 +3,8 @@ package localbitcoins
 import (
   "bytes"
   "encoding/json"
+  "fmt"
+  "io/ioutil"
   "net/http"
   "net/url"
   "reflect"
@@ -100,6 +102,77 @@ func (c *Client) NewRequest(method, urlStr string,
 // http.Response returned from LocalBitcoins and provides convenient access to
 // things like pagination links.
 type Response struct {
+  *http.Response
+}
+
+// Creates a new Response for the provided http.Response.
+func newResponse(r *http.Response) *Response {
+  response := &Response{Response: r}
+  return response
+}
+
+// Sends an API request and returns the API response. The API response is
+// decoded and stored in the value pointed to by v, or returned as an error if
+// an API error has occurred.
+func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
+  resp, err := c.client.Do(req)
+  if err != nil {
+    return nil, err
+  }
+
+  defer resp.Body.Close()
+
+  response := newResponse(resp)
+
+  err = CheckResponse(resp)
+  if err != nil {
+    // even if there was an error, we still return the response body if the
+    // user wants to inspect it further
+    return response, err
+  }
+
+  if v != nil {
+    err = json.NewDecoder(resp.Body).Decode(v)
+  }
+  return response, err
+}
+
+// An ErrorResponse reports an error caused by an API request.
+type ErrorResponse struct {
+  Response *http.Response
+  Err Error `json:"error"`
+}
+
+func (r *ErrorResponse) Error() string {
+  return fmt.Sprintf("%v %v: %d - %v %d",
+    r.Response.Request.Method, r.Response.Request.URL,
+    r.Response.StatusCode, r.Err.Message, r.Err.Code)
+}
+
+type Error struct {
+  Message string `json:"message"`
+  Code int `json:"error_code"`
+}
+
+func (e *Error) Error() string {
+  return fmt.Sprintf(`type %d error with message "%v"`, e.Code, e.Message)
+}
+
+// CheckResponse checks the API response for errors, and returns them if
+// present. A response is considered an error if it has a status code outside
+// the 200 range. API error responses are expected to have either no response
+// body, or a JSON response body that maps to ErrorResponse. Any other
+// response body will be silently ignored.
+func CheckResponse(r *http.Response) error {
+  if c := r.StatusCode; 200 <= c && c <= 299 {
+    return nil
+  }
+  errorResponse := &ErrorResponse{Response: r}
+  data, err := ioutil.ReadAll(r.Body)
+  if err == nil && data != nil {
+    json.Unmarshal(data, errorResponse)
+  }
+  return errorResponse
 }
 
 // String is a helper routine that allocates a new string value to store v and

@@ -2,10 +2,13 @@ package localbitcoins
 
 import (
   "encoding/json"
+  "fmt"
   "io/ioutil"
   "net/http"
   "net/http/httptest"
   "net/url"
+  "reflect"
+  "strings"
   "testing"
 )
 
@@ -117,4 +120,89 @@ func TestNewRequest_badURL(t *testing.T) {
   c := NewClient(nil)
   _, err := c.NewRequest("GET", ":", nil)
   testURLParseError(t, err)
+}
+
+func TestDo(t *testing.T) {
+  setup()
+  defer teardown()
+
+  type foo struct {
+    A string
+  }
+
+  mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+    if m := "GET"; m != r.Method {
+      t.Errorf("Request method = %v, want %v", r.Method, m)
+    }
+    fmt.Fprint(w, `{"A":"a"}`)
+  })
+
+  req, _ := client.NewRequest("GET", "/", nil)
+  body := new(foo)
+  client.Do(req, body)
+
+  want := &foo{"a"}
+  if !reflect.DeepEqual(body, want) {
+    t.Errorf("Response body = %v, want %v", body, want)
+  }
+}
+
+func TestDo_httpError(t *testing.T) {
+  setup()
+  defer teardown()
+
+  mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+    http.Error(w, "Bad Request", 400)
+  })
+
+  req, _ := client.NewRequest("GET", "/", nil)
+  _, err := client.Do(req, nil)
+
+  if err == nil {
+    t.Error("Expected HTTP 400 error.")
+  }
+}
+
+// Test handling of an error caused by the internal http client's Do()
+// function. A redirect loop is pretty unlikely to occur within the
+// LocalBitcoins API, but does allow us to exercise the right code path.
+func TestDo_redirectLoop(t *testing.T) {
+  setup()
+  defer teardown()
+
+  mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+    http.Redirect(w, r, "/", http.StatusFound)
+  })
+
+  req, _ := client.NewRequest("GET", "/", nil)
+  _, err := client.Do(req, nil)
+
+  if err == nil {
+    t.Error("Expected error to be returned.")
+  }
+  if err, ok := err.(*url.Error); !ok {
+    t.Errorf("Expected a URL error; got %#v.", err)
+  }
+}
+
+func TestCheckResponse(t *testing.T) {
+  res := &http.Response{
+    Request: &http.Request{},
+    StatusCode: http.StatusBadRequest,
+    Body: ioutil.NopCloser(strings.NewReader(`{
+      "error": {"message": "m", "error_code": 7}}`)),
+  }
+  err := CheckResponse(res).(*ErrorResponse)
+
+  if err == nil {
+    t.Errorf("Expected error response.")
+  }
+
+  want := &ErrorResponse{
+    Response: res,
+    Err: Error{Message: "m", Code: 7},
+  }
+  if !reflect.DeepEqual(err, want) {
+    t.Errorf("Error = %#v, want %#v", err, want)
+  }
 }
