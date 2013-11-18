@@ -29,6 +29,7 @@ type Client struct {
 	UserAgent string
 
 	// Services for talking to different parts of the LocalBitcoins API.
+	Accounts *AccountsService
 }
 
 // Adds the parameters in opt as URL query parameters to s. opt must be a
@@ -175,7 +176,30 @@ func CheckResponse(r *http.Response) error {
 	return errorResponse
 }
 
-// String is a helper routine that allocates a new string value to store v and
+// Represents data as returned by the LocalBitcoins API. Wraps the data and
+// actions objects.
+type ResponseData struct {
+	data    interface{} `json:"data"`
+	actions interface{} `json:"actions"`
+}
+
+// Bool is a helper function that allocates a new bool value to store v and
+// returns a pointer to it.
+func Bool(v bool) *bool {
+	p := new(bool)
+	*p = v
+	return p
+}
+
+// Int is a helper function that allocates a new int32 value to store v and
+// returns a pointer to it, but unlike Int32 its argument value is an int.
+func Int(v int) *int {
+	p := new(int)
+	*p = v
+	return p
+}
+
+// String is a helper function that allocates a new string value to store v and
 // returns a pointer to it.
 func String(v string) *string {
 	p := new(string)
