@@ -63,7 +63,7 @@ func TestNewRequest(t *testing.T) {
     Field *string `json:"field,omitempty"`
   }
 
-  inURL, outURL := "/foo", defaultBaseURL + "/foo"
+  inURL, outURL := "/foo", defaultBaseURL + "foo"
   inBody, outBody := &TestType{Field: String("l")}, `{"field":"l"}` + "\n"
 
   req, _ := c.NewRequest("GET", inURL, inBody)

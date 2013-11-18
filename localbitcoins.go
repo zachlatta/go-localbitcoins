@@ -12,7 +12,7 @@ import (
 
 const (
   libraryVersion = "0.0.1"
-  defaultBaseURL = "https://localbitcoins.com/api"
+  defaultBaseURL = "https://localbitcoins.com/"
   userAgent = "go-localbitcoins/" + libraryVersion
 )
 
@@ -20,7 +20,7 @@ const (
 type Client struct {
   client *http.Client
 
-  // Base URL used for API requests. No trailing slash.
+  // Base URL used for API requests. Must end with a trailing slash.
   BaseURL *url.URL
 
   // User agent sent when communicating with the LocalBitcoins API.
@@ -77,11 +77,7 @@ func (c *Client) NewRequest(method, urlStr string,
     return nil, err
   }
 
-  // We manually construct this URL because the following doesn't play nice
-  // with base URLs similar to https://example.com/page/
-  //
-  //   u := c.BaseURL.ResolveReference(rel)
-  u := c.BaseURL.String() + rel.String()
+  u := c.BaseURL.ResolveReference(rel)
 
   buf := new(bytes.Buffer)
   if body != nil {
@@ -91,7 +87,7 @@ func (c *Client) NewRequest(method, urlStr string,
     }
   }
 
-  req, err := http.NewRequest(method, u, buf)
+  req, err := http.NewRequest(method, u.String(), buf)
   if err != nil {
     return nil, err
   }
