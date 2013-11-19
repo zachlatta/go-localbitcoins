@@ -7,6 +7,36 @@ import (
 	"testing"
 )
 
+func TestAccount_marshall(t *testing.T) {
+	testJSONMarshal(t, &Account{}, "{}")
+
+	a := &Account{
+		Username:                  String("foo"),
+		TradingPartnersCount:      Int(5),
+		FeedbacksUnconfirmedCount: Int(2),
+		TradeVolumeText:           String("Less than 25 BTC"),
+		HasCommonTrades:           Bool(false),
+		ConfirmedTradeCountText:   String("0"),
+		BlockedCount:              Int(0),
+		FeedbackCount:             Int(0),
+		Url:                       String("https://localbitcoins.com/p/foo/"),
+		TrustedCount:              Int(2),
+	}
+	want := `{
+    "username": "foo",
+    "trading_partners_count": 5,
+    "feedbacks_unconfirmed_count": 2,
+    "trade_volume_text": "Less than 25 BTC",
+    "has_common_trades": false,
+    "confirmed_trade_count_text": "0",
+    "blocked_count": 0,
+    "feedback_count": 0,
+    "url": "https://localbitcoins.com/p/foo/",
+    "trusted_count": 2
+  }`
+	testJSONMarshal(t, a, want)
+}
+
 func TestAccountsService_Get_specifiedUser(t *testing.T) {
 	setup()
 	defer teardown()
