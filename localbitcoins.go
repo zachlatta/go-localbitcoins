@@ -66,6 +66,7 @@ func NewClient(httpClient *http.Client) *Client {
 	baseURL, _ := url.Parse(defaultBaseURL)
 
 	c := &Client{client: httpClient, BaseURL: baseURL, UserAgent: userAgent}
+	c.Accounts = &AccountsService{client: c}
 	return c
 }
 
@@ -179,8 +180,8 @@ func CheckResponse(r *http.Response) error {
 // Represents data as returned by the LocalBitcoins API. Wraps the data and
 // actions objects.
 type ResponseData struct {
-	data    interface{} `json:"data"`
-	actions interface{} `json:"actions"`
+	Data    interface{} `json:"data"`
+	Actions interface{} `json:"actions"`
 }
 
 // Bool is a helper function that allocates a new bool value to store v and
