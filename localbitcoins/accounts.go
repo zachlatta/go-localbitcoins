@@ -41,8 +41,8 @@ func (s *AccountsService) Get(account string) (*Account, *Response, error) {
 	}
 
 	acc := new(Account)
-	aResp := ResponseData{Data: acc}
-	resp, err := s.client.Do(req, &aResp)
+	aResp := &ResponseData{Data: acc}
+	resp, err := s.client.Do(req, aResp)
 	if err != nil {
 		return nil, resp, err
 	}
