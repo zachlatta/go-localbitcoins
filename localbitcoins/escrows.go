@@ -19,24 +19,10 @@ type Escrow struct {
 	ExchangeRateUpdatedAt *time.Time `json:"exchange_rate_updated_at,omitempty"`
 
 	releaseUrl *string
-	service    *EscrowsService
 }
 
 func (e Escrow) String() string {
 	return Stringify(e)
-}
-
-// Release the current escrow by posting to it's releaseUrl.
-func (e Escrow) Release() (*Response, error) {
-	req, err := e.service.client.NewRequest("POST", *e.releaseUrl, nil)
-	if err != nil {
-		return nil, err
-	}
-	resp, err := e.service.client.Do(req, nil)
-	if err != nil {
-		return resp, err
-	}
-	return resp, err
 }
 
 // Escrow list middleman used strictly for unmarshaling the API response.
