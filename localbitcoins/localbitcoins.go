@@ -30,6 +30,7 @@ type Client struct {
 
 	// Services for talking to different parts of the LocalBitcoins API.
 	Accounts *AccountsService
+	Escrows  *EscrowsService
 }
 
 // Adds the parameters in opt as URL query parameters to s. opt must be a
@@ -67,6 +68,7 @@ func NewClient(httpClient *http.Client) *Client {
 
 	c := &Client{client: httpClient, BaseURL: baseURL, UserAgent: userAgent}
 	c.Accounts = &AccountsService{client: c}
+	c.Escrows = &EscrowsService{client: c}
 	return c
 }
 
@@ -188,6 +190,14 @@ type ResponseData struct {
 // returns a pointer to it.
 func Bool(v bool) *bool {
 	p := new(bool)
+	*p = v
+	return p
+}
+
+// Float is a helper function that allocates a new float64 value to store v
+// and returns a pointer to it.
+func Float(v float64) *float64 {
+	p := new(float64)
 	*p = v
 	return p
 }

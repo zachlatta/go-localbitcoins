@@ -95,4 +95,11 @@ func main() {
 		panic(err)
 	}
 	fmt.Println(zrl)
+
+	// Get the open escrows of the authenticated account.
+	escrows, _, err := client.Escrows.List()
+	if err != nil {
+		panic("Error retrieving escrows: " + err.Error())
+	}
+	fmt.Println(escrows)
 }
