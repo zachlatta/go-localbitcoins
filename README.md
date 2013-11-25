@@ -1,10 +1,13 @@
-# go-localbitcoins [![Build Status](https://travis-ci.org/zachlatta/go-localbitcoins.png?branch=master)](https://travis-ci.org/zachlatta/go-localbitcoins)
+# go-localbitcoins
 
 go-localbitcoins is a Go wrapper around the [LocalBitcoins
 API](https://localbitcoins.com/api-docs).
 
 **Documentation**:
 http://godoc.org/github.com/zachlatta/go-localbitcoins/localbitcoins
+**Build Status**: [![Build Status](https://travis-ci.org/zachlatta/go-localbitcoins.png?branch=master)](https://travis-ci.org/zachlatta/go-localbitcoins)
+**Test Coverage**: [![Coverage
+Status](https://coveralls.io/repos/zachlatta/go-localbitcoins/badge.png?branch=master)](https://coveralls.io/r/zachlatta/go-localbitcoins?branch=master)
 
 go-localbitcoins requires Go version 1.1 or greater.
 
