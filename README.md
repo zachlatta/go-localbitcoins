@@ -20,7 +20,7 @@ go-localbitcoins requires Go version 1.1 or greater.
 import "github.com/zachlatta/go-localbitcoins/localbitcoins"
 ```
 
-Construct a new LocalBitcoisn client, then use services to access different
+Construct a new LocalBitcoins client, then use services to access different
 parts of the API. For example, to get the user info for the account "zrl":
 
 ```go
