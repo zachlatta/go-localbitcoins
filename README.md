@@ -6,6 +6,8 @@ API](https://localbitcoins.com/api-docs).
 **Documentation**:
 http://godoc.org/github.com/zachlatta/go-localbitcoins/localbitcoins
 
+**Sourcegraph**: [![docs examples](https://sourcegraph.com/api/repos/github.com/zachlatta/go-localbitcoins/badges/docs-examples.png)](https://sourcegraph.com/github.com/zachlatta/go-localbitcoins)
+
 **Build Status**: [![Build
 Status](https://travis-ci.org/zachlatta/go-localbitcoins.png?branch=master)](https://travis-ci.org/zachlatta/go-localbitcoins)
 
