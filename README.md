@@ -1,4 +1,4 @@
-# go-localbitcoins
+# go-localbitcoins ![Analytics](https://ga-beacon.appspot.com/UA-34529482-6/go-localbitcoins/readme?pixel)
 
 go-localbitcoins is a Go wrapper around the [LocalBitcoins
 API](https://localbitcoins.com/api-docs).
