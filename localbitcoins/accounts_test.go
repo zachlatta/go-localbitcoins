@@ -41,7 +41,7 @@ func TestAccountsService_Get_specifiedUser(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/api/account_info/foo", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/api/account_info/foo/", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
 		fmt.Fprint(w, `{"data":{"username":"foo"}}`)
 	})
@@ -61,7 +61,7 @@ func TestAccountsService_Get_authenticatedUser(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/api/myself", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/api/myself/", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
 		fmt.Fprint(w, `{"data":{"username": "foo"}}`)
 	})

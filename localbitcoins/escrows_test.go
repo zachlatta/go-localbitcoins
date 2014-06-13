@@ -11,7 +11,7 @@ func TestEscrowsService_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/api/escrows", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/api/escrows/", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
 		fmt.Fprint(w, `{
       "data":{
