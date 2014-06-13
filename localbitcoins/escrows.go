@@ -43,7 +43,7 @@ type releaseUrlMiddleman struct {
 }
 
 func (s *EscrowsService) List() ([]*Escrow, *Response, error) {
-	req, err := s.client.NewRequest("GET", "/api/escrows", nil)
+	req, err := s.client.NewRequest("GET", "/api/escrows/", nil)
 	if err != nil {
 		return nil, nil, err
 	}

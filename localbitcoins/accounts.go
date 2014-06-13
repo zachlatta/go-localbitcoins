@@ -31,9 +31,9 @@ func (a Account) String() string {
 func (s *AccountsService) Get(account string) (*Account, *Response, error) {
 	var a string
 	if account != "" {
-		a = fmt.Sprintf("api/account_info/%v", account)
+		a = fmt.Sprintf("api/account_info/%v/", account)
 	} else {
-		a = "api/myself"
+		a = "api/myself/"
 	}
 	req, err := s.client.NewRequest("GET", a, nil)
 	if err != nil {
