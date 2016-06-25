@@ -31,7 +31,7 @@ go-localbitcoins does not directly handle authentication. Instead, when creating
 
 A complete example with authentication is available at https://github.com/zachlatta/go-localbitcoins/blob/master/examples/example.go
 
-## Acknowledgements
+## Acknowledgments
 
 go-localbitcoins is heavily inspired by the wonderful [go-github](https://github.com/google/go-github) library.
 
